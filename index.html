@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>홍길동 | 개인 페이지</title>
+  <meta name="description" content="AI와 기술을 공부하고 만드는 사람, 홍길동의 개인 페이지">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- 내비게이션 -->
+  <header class="nav" id="nav">
+    <div class="nav__inner">
+      <a href="#top" class="nav__logo">홍길동</a>
+      <button class="nav__toggle" id="navToggle" aria-label="메뉴 열기" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+      <nav class="nav__menu" id="navMenu">
+        <a href="#about">소개</a>
+        <a href="#education">학력</a>
+        <a href="#career">경력</a>
+        <a href="#interests">관심사</a>
+        <a href="#contact">연락처</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- 히어로 -->
+  <section class="hero" id="top">
+    <div class="hero__overlay"></div>
+    <div class="hero__content">
+      <p class="hero__eyebrow">Hello, I'm</p>
+      <h1 class="hero__title">홍길동</h1>
+      <p class="hero__subtitle">
+        <span class="typing" id="typing"></span><span class="cursor">|</span>
+      </p>
+      <div class="hero__actions">
+        <a href="#about" class="btn btn--primary">더 알아보기</a>
+        <a href="#contact" class="btn btn--ghost">연락하기</a>
+      </div>
+    </div>
+    <a href="#about" class="hero__scroll" aria-label="아래로 스크롤">↓</a>
+  </section>
+
+  <main>
+    <!-- 소개 -->
+    <section class="section" id="about">
+      <div class="container about">
+        <div class="about__image reveal">
+          <img src="images/ai-brain.jpg" alt="인공지능을 상징하는 이미지">
+        </div>
+        <div class="about__text reveal">
+          <h2 class="section__title">소개</h2>
+          <p>
+            안녕하세요! 인공지능과 소프트웨어로 실제 문제를 해결하는 일에 관심이 많은
+            <strong>홍길동</strong>입니다. 새로운 기술을 배우고, 배운 것을 직접 만들어 보며
+            성장하는 과정을 즐깁니다.
+          </p>
+          <p>
+            데이터 속에서 의미를 찾고, 사람들에게 실질적인 도움이 되는 서비스를 만드는 것이 목표입니다.
+          </p>
+          <ul class="skills">
+            <li>Python</li>
+            <li>Machine Learning</li>
+            <li>Deep Learning</li>
+            <li>JavaScript</li>
+            <li>데이터 분석</li>
+            <li>임베디드</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 학력 -->
+    <section class="section section--alt" id="education">
+      <div class="container">
+        <h2 class="section__title center reveal">학력</h2>
+        <div class="feature reveal">
+          <img src="images/university.jpg" alt="대학교 캠퍼스" class="feature__img">
+          <div class="feature__body">
+            <ol class="timeline">
+              <li>
+                <span class="timeline__date">20XX – 20XX</span>
+                <h3>○○대학교 대학원</h3>
+                <p>인공지능학과 석사 · 연구 분야: 자연어 처리</p>
+              </li>
+              <li>
+                <span class="timeline__date">20XX – 20XX</span>
+                <h3>○○대학교</h3>
+                <p>컴퓨터공학과 학사</p>
+              </li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 경력 -->
+    <section class="section" id="career">
+      <div class="container">
+        <h2 class="section__title center reveal">경력</h2>
+        <div class="feature feature--reverse reveal">
+          <img src="images/industry.jpg" alt="산업 현장" class="feature__img">
+          <div class="feature__body">
+            <ol class="timeline">
+              <li>
+                <span class="timeline__date">20XX – 현재</span>
+                <h3>○○주식회사 · AI 엔지니어</h3>
+                <p>제조 공정 데이터를 활용한 불량 예측 모델 개발 및 운영</p>
+              </li>
+              <li>
+                <span class="timeline__date">20XX – 20XX</span>
+                <h3>△△연구소 · 연구원</h3>
+                <p>스마트팩토리 센서 데이터 분석 및 시각화 시스템 구축</p>
+              </li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 관심사 -->
+    <section class="section section--alt" id="interests">
+      <div class="container">
+        <h2 class="section__title center reveal">관심사</h2>
+        <div class="cards">
+          <article class="card reveal">
+            <img src="images/reading.jpg" alt="책 읽기">
+            <div class="card__body">
+              <h3>독서</h3>
+              <p>기술서부터 인문학까지, 한 달에 두세 권씩 꾸준히 읽으며 생각의 폭을 넓힙니다.</p>
+            </div>
+          </article>
+          <article class="card reveal">
+            <img src="images/music.jpg" alt="음악">
+            <div class="card__body">
+              <h3>음악</h3>
+              <p>코딩할 때는 잔잔한 재즈를, 쉴 때는 직접 악기를 연주하며 머리를 식힙니다.</p>
+            </div>
+          </article>
+          <article class="card reveal">
+            <img src="images/hero-circuit.jpg" alt="회로 기판">
+            <div class="card__body">
+              <h3>메이킹</h3>
+              <p>아두이노와 라즈베리파이로 작은 하드웨어 프로젝트를 만들어 보는 것을 좋아합니다.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- 연락처 -->
+    <section class="section contact" id="contact">
+      <div class="container center reveal">
+        <h2 class="section__title">연락처</h2>
+        <p class="contact__lead">함께 이야기 나누고 싶으시다면 언제든 연락 주세요.</p>
+        <div class="contact__links">
+          <a href="mailto:your@email.com" class="btn btn--primary">이메일 보내기</a>
+          <a href="https://github.com/" target="_blank" rel="noopener" class="btn btn--ghost">GitHub</a>
+          <a href="https://www.linkedin.com/" target="_blank" rel="noopener" class="btn btn--ghost">LinkedIn</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>© <span id="year"></span> 홍길동. All rights reserved.</p>
+  </footer>
+
+  <button class="to-top" id="toTop" aria-label="맨 위로">↑</button>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

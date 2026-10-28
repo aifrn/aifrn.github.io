@@ -1,5 +1,4 @@
 ai-brain.jpg
-data.txt
 hero-circuit.jpg
 industry.jpg
 music.jpg

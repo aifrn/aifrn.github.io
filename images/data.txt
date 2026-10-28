@@ -1,0 +1,7 @@
+ai-brain.jpg
+data.txt
+hero-circuit.jpg
+industry.jpg
+music.jpg
+reading.jpg
+university.jpg

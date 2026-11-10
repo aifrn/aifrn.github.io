@@ -1,92 +1,26 @@
-// 히어로 타이핑 효과에 표시할 문구
-const phrases = [
-  'AI 엔지니어',
-  '평생 학습자',
-  '책과 음악을 사랑하는 사람',
-];
+/* =========================================================
+   AI 강의자료실 공통 스크립트
+   - 모든 페이지가 이 파일 하나를 함께 사용합니다.
+   - 보조 기능만 담당합니다. 이 파일이 없어도 내용과 자료실은 모두 동작합니다.
+   ========================================================= */
 
-const nav = document.getElementById('nav');
-const navToggle = document.getElementById('navToggle');
-const navMenu = document.getElementById('navMenu');
-const toTop = document.getElementById('toTop');
-
-// 타이핑 효과
-(function typeLoop() {
-  const el = document.getElementById('typing');
-  let phraseIdx = 0;
-  let charIdx = 0;
-  let deleting = false;
-
-  function tick() {
-    const current = phrases[phraseIdx];
-    charIdx += deleting ? -1 : 1;
-    el.textContent = current.slice(0, charIdx);
-
-    let delay = deleting ? 50 : 110;
-    if (!deleting && charIdx === current.length) {
-      delay = 1800;
-      deleting = true;
-    } else if (deleting && charIdx === 0) {
-      deleting = false;
-      phraseIdx = (phraseIdx + 1) % phrases.length;
-      delay = 400;
-    }
-    setTimeout(tick, delay);
+// 푸터에 올해 연도를 표시합니다.
+function set_footer_year() {
+  const year_el = document.getElementById("footer_year");
+  if (year_el) {
+    year_el.textContent = String(new Date().getFullYear());
   }
-  tick();
-})();
-
-// 스크롤 시 내비게이션 배경, 맨 위로 버튼 표시
-function onScroll() {
-  const y = window.scrollY;
-  nav.classList.toggle('scrolled', y > 40);
-  toTop.classList.toggle('show', y > 600);
 }
-window.addEventListener('scroll', onScroll, { passive: true });
-onScroll();
 
-toTop.addEventListener('click', () => window.scrollTo({ top: 0 }));
+// 새 탭으로 열리는 링크에 보안 속성(rel)을 자동으로 붙입니다.
+function secure_blank_links() {
+  const blank_links = document.querySelectorAll('a[target="_blank"]');
+  blank_links.forEach(function (link_el) {
+    link_el.setAttribute("rel", "noopener noreferrer");
+  });
+}
 
-// 모바일 메뉴 토글
-navToggle.addEventListener('click', () => {
-  const open = navMenu.classList.toggle('open');
-  navToggle.setAttribute('aria-expanded', String(open));
-  if (open) nav.classList.add('scrolled');
+document.addEventListener("DOMContentLoaded", function () {
+  set_footer_year();
+  secure_blank_links();
 });
-navMenu.querySelectorAll('a').forEach((a) =>
-  a.addEventListener('click', () => {
-    navMenu.classList.remove('open');
-    navToggle.setAttribute('aria-expanded', 'false');
-  })
-);
-
-// 요소가 화면에 들어오면 등장 애니메이션
-const revealObserver = new IntersectionObserver(
-  (entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-        revealObserver.unobserve(entry.target);
-      }
-    });
-  },
-  { threshold: 0.15 }
-);
-document.querySelectorAll('.reveal').forEach((el) => revealObserver.observe(el));
-
-// 현재 보고 있는 섹션을 메뉴에 표시
-const menuLinks = [...navMenu.querySelectorAll('a')];
-const sectionObserver = new IntersectionObserver(
-  (entries) => {
-    entries.forEach((entry) => {
-      if (!entry.isIntersecting) return;
-      menuLinks.forEach((a) =>
-        a.classList.toggle('active', a.getAttribute('href') === `#${entry.target.id}`)
-      );
-    });
-  },
-  { rootMargin: '-45% 0px -50% 0px' }
-);
-document.querySelectorAll('main section[id]').forEach((s) => sectionObserver.observe(s));
-
-document.getElementById('year').textContent = new Date().getFullYear();

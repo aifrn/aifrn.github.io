@@ -1,0 +1,28 @@
+# 내부 기획 문서 (PRD, TRD, TASK 등) - 공개하지 않음
+docs/
+*.draft.md
+
+# Claude Code 로컬 설정
+.claude/
+CLAUDE.md
+
+# 환경 변수·비밀 정보
+.env
+.env.*
+*.key
+*.pem
+
+# 편집기 설정
+.vscode/
+.idea/
+*.swp
+
+# 운영체제가 만드는 파일
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# 임시·백업 파일
+*.tmp
+*.bak
+*~

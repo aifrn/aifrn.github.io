@@ -315,6 +315,11 @@ img {
   background: var(--color_accent_soft);
 }
 
+/* 텍스트 파일(.txt) 자료는 배지를 TXT 로 표시 */
+.pds_item a[href$=".txt"]::before {
+  content: "TXT";
+}
+
 /* ---------- 하단 ---------- */
 .site_footer {
   margin-top: 48px;

@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Code로 GitHub Pages 개인 대시보드 만들기 - 강의 자료</title>
+<style>
+  /* 전체 기본 스타일 */
+  body {
+    font-family: "Malgun Gothic", sans-serif;
+    background: #f2f4f8;
+    color: #222;
+    margin: 0;
+    padding: 32px 16px;
+    line-height: 1.6;
+  }
+  .page { max-width: 860px; margin: 0 auto; }
+  h1 { font-size: 26px; margin: 0 0 20px; }
+
+  /* 목차 상자 */
+  .toc {
+    background: white;
+    border-radius: 12px;
+    padding: 16px 24px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  }
+  .toc h2 { font-size: 18px; margin: 0 0 8px; }
+  .toc ol { margin: 0; padding-left: 20px; }
+  .toc a { color: #0b57d0; text-decoration: none; }
+  .toc a:hover { text-decoration: underline; }
+
+  /* 단계별 접기/펼치기 상자 */
+  details {
+    background: white;
+    border-radius: 12px;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  }
+  summary {
+    list-style: none;
+    cursor: pointer;
+    padding: 16px 20px;
+    font-size: 18px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  summary::-webkit-details-marker { display: none; }
+
+  /* 제목 왼쪽의 작은 화살표 (닫힘: 오른쪽, 열림: 아래쪽) */
+  .arrow {
+    width: 0;
+    height: 0;
+    border-top: 6px solid transparent;
+    border-bottom: 6px solid transparent;
+    border-left: 9px solid #666;
+    transition: transform 0.2s;
+  }
+  details[open] .arrow { transform: rotate(90deg); }
+
+  .content { padding: 0 24px 20px; border-top: 1px solid #eee; }
+  .content h3 {
+    font-size: 16px;
+    margin: 22px 0 8px;
+    padding-left: 8px;
+    border-left: 4px solid #000;
+  }
+  .text { white-space: pre-wrap; margin: 8px 0; }
+  pre {
+    background: #1e1e1e;
+    color: #f5f5f5;
+    padding: 12px 16px;
+    border-radius: 8px;
+    overflow-x: auto;
+    font-size: 14px;
+  }
+  /* 프롬프트 상자: 명령어와 구분되도록 밝은 색 */
+  pre.prompt {
+    background: #eef3ff;
+    color: #1a2b4c;
+    border-left: 4px solid #0b57d0;
+    white-space: pre-wrap;
+    font-family: "Malgun Gothic", sans-serif;
+    font-size: 15px;
+  }
+  .content a { color: #0b57d0; word-break: break-all; }
+
+  /* 표 */
+  table { border-collapse: collapse; width: 100%; margin: 8px 0; font-size: 15px; }
+  th, td { border: 1px solid #ddd; padding: 8px 12px; text-align: left; }
+  th { background: #f6f7f9; }
+  td code { background: #f2f4f8; padding: 1px 6px; border-radius: 4px; }
+
+  /* 초기화면으로 돌아가기 링크 */
+  .back_link { display: inline-block; margin-bottom: 16px; color: #0b57d0; text-decoration: none; font-weight: bold; }
+  .back_link:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<div class="page">
+  <!-- 초기화면으로 돌아가기 -->
+  <a class="back_link" href="../index.html"> HOME 으로 돌아가기</a>
+  <h1>Claude Code로 GitHub Pages 개인 대시보드 만들기 - 강의 자료</h1>
+
+  <nav class="toc">
+    <h2>목차</h2>
+    <ol>
+      <li><a href="#step0" data-step="step0">강의 개요와 준비물</a></li>
+      <li><a href="#step_concept" data-step="step_concept">핵심 개념 먼저 알기</a></li>
+      <li><a href="#step1" data-step="step1">1단계: 가장 단순한 HTML 페이지 만들고 배포하기</a></li>
+      <li><a href="#step2" data-step="step2">2단계: 프로젝트 링크 자리 6개 확보하기</a></li>
+      <li><a href="#step4" data-step="step4">4단계: 개인 대시보드로 확장하기 (*핵심*)</a></li>
+      <li><a href="#step_code" data-step="step_code">코드 구조 이해하기: dashboard_data</a></li>
+      <li><a href="#step_task" data-step="step_task">실습 과제</a></li>
+      <li><a href="#step_tip" data-step="step_tip">좋은 프롬프트 작성 요령</a></li>
+      <li><a href="#step_faq" data-step="step_faq">문제 해결 (FAQ)</a></li>
+    </ol>
+  </nav>
+
+<details id="step0">
+<summary><span class="arrow"></span>강의 개요와 준비물</summary>
+<div class="content">
+<h3>강의 개요</h3>
+<div class="text">- 목표   : Claude Code에게 자연어 프롬프트로 지시하여
+           GitHub 페이지(ex: ai-lecture-lab.github.io)를 만들고,
+           실습 프로젝트 링크 + 시계 + 그래프가 있는 개인 대시보드로 발전시킨다.
+- 결과물 : https://[내깃허브아이디].github.io/
+           <a href="https://ai-lecture-lab.github.io/" target="_blank">https://ai-lecture-lab.github.io/</a>
+- 저장소 : <a href="https://github.com/ai-lecture-lab/ai-lecture-lab.github.io" target="_blank">https://github.com/ai-lecture-lab/ai-lecture-lab.github.io</a>
+- 소요   : 약 30~40분 (총 4단계)</div>
+<h3>준비물 (이미 다 준비되어 있음)</h3>
+<div class="text">1. GitHub 계정 + 개인 깃허브 아이디 (예: ai-lecture-lab)
+2. Git 설치 (git --version 으로 확인)
+3. GitHub CLI(gh) 설치 및 로그인
+4. Claude Code 설치
+5. 빈 작업 폴더 (예: C:\dev\claudeCLI\ai-lecture-lab.github.io)
+   -&gt; 이 폴더에서 claude 실행</div>
+<h3>GitHub CLI 로그인 확인</h3>
+<pre><code>gh auth login
+gh auth status</code></pre>
+<div class="text">"Logged in to github.com" 이 나오면 준비 완료!</div>
+</div>
+</details>
+
+<details id="step_concept">
+<summary><span class="arrow"></span>핵심 개념 먼저 알기</summary>
+<div class="content">
+<h3>1) GitHub Pages 의 "사용자/조직 사이트"</h3>
+<div class="text">- 저장소 이름을 반드시 &lt;계정 또는 조직 이름&gt;.github.io 로 만들어야 한다.
+- 예) 조직 이름이 ai-lecture-lab 이면
+      저장소 이름 = ai-lecture-lab.github.io
+      사이트 주소 = https://ai-lecture-lab.github.io/
+- 이 이름 규칙을 지키면 main 브랜치의 루트(/)가 자동으로 배포된다.</div>
+<h3>2) 프로젝트 사이트</h3>
+<div class="text">- 같은 조직 안에 다른 저장소(예: to-do-list)를 만들고 Pages를 켜면
+  https://ai-lecture-lab.github.io/to-do-list 처럼 하위 경로로 열린다.
+- 그래서 메인 대시보드에서 각 실습 프로젝트로 링크를 걸 수 있다.</div>
+<h3>3) 배포 반영 시간</h3>
+<div class="text">- push 후 보통 1~2분 뒤에 반영된다.
+- 화면이 안 바뀌면 Ctrl + F5 (강력 새로고침).</div>
+</div>
+</details>
+
+<details id="step1">
+<summary><span class="arrow"></span>1단계: 가장 단순한 HTML 페이지 만들고 배포하기</summary>
+<div class="content">
+<h3>프롬프트</h3>
+<pre class="prompt">내 깃허브 id 는 ai-lecture-lab 이고, ai-lecture-lab.github.io 라는 이름을 가진
+페이지를 만들려고 한다. 우선 아주 단순한 html 하나만 있는 페이지를 만들어서
+보여줘. 깃 커밋 &amp; 깃 푸시까지 진행해줘.</pre>
+<div class="text">* 수강생은 ai-lecture-lab 을 본인 계정·조직 이름으로 바꿔서 입력.</div>
+<h3>Claude Code가 수행한 작업</h3>
+<div class="text">1. 현재 폴더 상태, git 설치, gh 로그인 상태, 원격 저장소 존재 여부 확인
+   -&gt; 저장소가 아직 없음을 확인</div>
+<pre><code>gh auth status
+gh repo view ai-lecture-lab/ai-lecture-lab.github.io</code></pre>
+<div class="text">2. 조직이 실제로 존재하는지 확인</div>
+<pre><code>gh api orgs/ai-lecture-lab</code></pre>
+<div class="text">3. index.html 작성 (제목 + 환영 문구, 화면 중앙 정렬)
+4. 로컬 저장소 생성 -&gt; 커밋 -&gt; GitHub 저장소 생성 + push 를 한 번에 진행</div>
+<pre><code>git init -b main
+git add index.html
+git commit -m "Add initial index.html"
+gh repo create ai-lecture-lab/ai-lecture-lab.github.io --public --source=. --remote=origin --push</code></pre>
+<div class="text">5. Pages 배포 상태 확인</div>
+<pre><code>gh api repos/ai-lecture-lab/ai-lecture-lab.github.io/pages</code></pre>
+<h3>포인트</h3>
+<div class="text">- "커밋 &amp; 푸시까지" 라고 명시하면 Claude가 저장소 생성부터 배포까지 끝낸다.
+- 저장소가 없으면 gh repo create 로 만들어 준다 (Public 이어야 무료 Pages 가능).
+- "아주 단순한 html" 이라고 지정했으므로 최소의 토큰으로 최소 기능만 가진 HTML 을 보여준다.</div>
+</div>
+</details>
+
+<details id="step2">
+<summary><span class="arrow"></span>2단계: 프로젝트 링크 자리 6개 확보하기</summary>
+<div class="content">
+<h3>프롬프트</h3>
+<pre class="prompt">잘 했어. 앞으로 이곳은 내가 실습 자료들을 올릴 곳이 될거야. 우선 간단하게 다른
+곳에서 만든 깃허브 페이지를 이곳에 올릴 수 있게 링크를 걸어둘 공간을 미리 6개
+확보해서 보여줘. 즉, 아직 링크는 작동하지 않는 것으로 다음 6개 프로젝트를
+"카드형 그리드 레이아웃"으로 연결해줘. 커밋 과 푸시 까지 진행해줘.
+1. 할일 목록 리스트
+2. 클로드 활용 스네이크 게임
+3. 개인 프로파일
+4. 주식 일기
+5. 4축 로봇암 시뮬레이터
+6. 이북(ebook) 쇼핑몰</pre>
+<h3>Claude Code가 수행한 작업</h3>
+<div class="text">1. index.html 을 카드형 그리드 레이아웃으로 변경
+2. 6개 카드 각각에 번호(01~06), 제목, "준비 중" 배지 표시
+3. 아직 링크가 없는 카드는 클릭이 안 되도록 처리
+     - href="#"
+     - class="project_card is_pending"   (CSS: pointer-events: none)
+     - aria-disabled="true"              (접근성: 비활성 상태 알림)
+4. 커밋 &amp; 푸시</div>
+<pre><code>git commit -m "Add 6 project placeholder cards"
+git push</code></pre>
+<h3>포인트</h3>
+<div class="text">- "아직 링크는 작동하지 않는 것으로" 라는 조건을 주면
+  자리만 잡아 두고 나중에 주소만 채우는 구조로 만들어 준다.</div>
+<h3>[참고] 3단계 프롬프트 "깃허브에 올려줘."</h3>
+<div class="text">- 2단계에서 이미 push 가 끝나 있었기 때문에
+  Claude는 git status / Pages 빌드 상태(built)만 확인하고
+  "이미 반영되어 있음" 을 알려 주었다.
+- 상태 확인용 명령:</div>
+<pre><code>git status -sb
+gh api repos/ai-lecture-lab/ai-lecture-lab.github.io/pages/builds/latest</code></pre>
+</div>
+</details>
+
+<details id="step4">
+<summary><span class="arrow"></span>4단계: 개인 대시보드로 확장하기 (시계 + 그래프 + 링크 연결)</summary>
+<div class="content">
+<h3>프롬프트</h3>
+<pre class="prompt">1번 할일 목록 리스트 링크 연결해줘 . 링크는
+"https://ai-lecture-lab.github.io/to-do-list" 이다.
+개인 대시보드 형식으로 프로젝트 연결 링크와 함께 현재 시간을 보여주는 시계를
+추가해줘.
+  우선은 그래프로 파이 챠트와 꺽은선 그래프를 데모용으로 그려줘. 나중에 그
+  자리에 다른 값을 넣을수 있게 자리 확보해줘. 적당한 선에서 개인 대시 보드로
+  보여질수 있는 값, 수치, 문구, 그래프 등을 넣어줘.</pre>
+<h3>Claude Code가 수행한 작업</h3>
+<div class="text">1. 화면 구성을 대시보드 형태로 재설계</div>
+<pre><code>+---------------------------------------+---------------+
+|  인사말 (시간대별로 바뀜)             |  시계/날짜    |
++---------+---------+---------+---------+---------------+
+| 학습시간 | 연속학습 | 완료실습 | 커밋 수  |  &lt;- 수치 타일 4개
++-------------------+-----------------------------------+
+|  파이 차트        |  꺾은선 그래프 (최근 7일)          |
++-------------------+-------------------+---------------+
+|  실습 프로젝트 6개 + 연결 진행률 바   | 오늘의 문구   |
+|                                       | 이번 주 목표  |
++---------------------------------------+---------------+</code></pre>
+<div class="text">2. 시계: setInterval 로 1초마다 시:분:초, 날짜, 요일 갱신
+3. 그래프: Chart.js (CDN) 사용</div>
+<pre><code>&lt;script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"&gt;&lt;/script&gt;</code></pre>
+<div class="text">4. 모든 값을 dashboard_data 라는 객체 하나에 모아 둠
+     -&gt; 나중에 이 객체의 값만 바꾸면 화면 전체가 갱신된다.
+5. 1번 프로젝트에 링크 연결 -&gt; "바로가기 →" 로 표시, 새 탭으로 열림
+6. 반응형(모바일 폭) + 다크 모드 지원
+7. 커밋 &amp; 푸시 후, 연결한 링크가 실제로 열리는지(HTTP 200) 확인</div>
+</div>
+</details>
+
+<details id="step_code">
+<summary><span class="arrow"></span>코드 구조 이해하기: dashboard_data</summary>
+<div class="content">
+<h3>데이터 창고</h3>
+<div class="text">index.html 아래쪽 &lt;script&gt; 안의 dashboard_data 가 대시보드의 "데이터 창고" 이다.</div>
+<pre><code>const dashboard_data = {
+  projects: [
+    { title: "할일 목록 리스트", url: "https://ai-lecture-lab.github.io/to-do-list" },
+    { title: "클로드 활용 스네이크 게임", url: null },   // null = 준비 중
+    ...
+  ],
+  stats: [
+    { label: "이번 주 학습 시간", value: "12.5h", note: "▲ 지난주 대비 +2.0h" },
+    ...
+  ],
+  pie_chart:  { labels: ["HTML/CSS", "JavaScript", "Claude 활용", "Git/배포"],
+                values: [30, 35, 25, 10] },
+  line_chart: { labels: ["월","화","수","목","금","토","일"],
+                values: [1.5, 2.0, 1.0, 2.5, 1.8, 3.0, 0.7] },
+  memos:  [ "할일 목록 리스트 배포 완료 ✅", ... ],
+  quotes: [ { text: "배움에는 왕도가 없다.", author: "유클리드" }, ... ]
+};</code></pre>
+<h3>무엇을 바꾸려면 어디를 고치나</h3>
+<table>
+  <tr><th>바꾸고 싶은 것</th><th>수정할 항목</th></tr>
+  <tr><td>프로젝트 링크 연결</td><td><code>projects[n].url</code> (null -&gt; 주소)</td></tr>
+  <tr><td>수치 타일</td><td><code>stats</code></td></tr>
+  <tr><td>파이 차트</td><td><code>pie_chart.labels</code> / <code>values</code></td></tr>
+  <tr><td>꺾은선 그래프</td><td><code>line_chart.labels</code> / <code>values</code></td></tr>
+  <tr><td>이번 주 목표</td><td><code>memos</code></td></tr>
+  <tr><td>오늘의 문구</td><td><code>quotes</code> (날짜마다 순환)</td></tr>
+</table>
+<div class="text">* 프로젝트 url 을 채우면 "준비 중" -&gt; "바로가기 →" 로 바뀌고
+  상단 진행률 바(예: 1/6, 17%)도 자동으로 올라간다.</div>
+</div>
+</details>
+
+<details id="step_task">
+<summary><span class="arrow"></span>실습 과제</summary>
+<div class="content">
+<h3>[과제 1] 2번 프로젝트 링크 연결하기 (직접 수정)</h3>
+<div class="text">- index.html 의 projects 에서 2번 url 을 본인 스네이크 게임 주소로 바꾸고
+  git add / commit / push 해 보기.</div>
+<h3>[과제 2] 같은 작업을 Claude Code에게 시키기</h3>
+<pre class="prompt">2번 클로드 활용 스네이크 게임 링크 연결해줘. 링크는
+"https://&lt;내조직&gt;.github.io/snake-game" 이다. 커밋 &amp; 푸시까지 진행해줘.</pre>
+<h3>[과제 3] 그래프를 실제 데이터로 바꾸기</h3>
+<pre class="prompt">꺾은선 그래프를 이번 주 실제 학습 시간으로 바꿔줘.
+월 1시간, 화 2시간, 수 0.5시간, 목 3시간, 금 1시간, 토 4시간, 일 2시간이야.
+데모 배지는 지워줘.</pre>
+<h3>[과제 4] 나만의 위젯 추가</h3>
+<pre class="prompt">대시보드에 D-day 카운터를 추가해줘. 기준일은 2026-12-31 이고 제목은
+"강의 종료까지" 로 해줘. 다른 패널과 디자인을 맞춰줘.</pre>
+</div>
+</details>
+
+<details id="step_tip">
+<summary><span class="arrow"></span>좋은 프롬프트 작성 요령 (이번 실습에서 배운 점)</summary>
+<div class="content">
+<div class="text">1. 배경을 먼저 알려준다
+     "ai-lecture-lab 은 내 개인 organization 이다" -&gt; 저장소 이름 규칙을 맞춰 줌
+2. 범위를 정해 준다
+     "아주 단순한 html 하나만" -&gt; 과하게 만들지 않음
+3. 끝까지 할 일을 명시한다
+     "깃 커밋 &amp; 깃 푸시까지" -&gt; 배포까지 한 번에 끝남
+4. 미래 확장을 말해 둔다
+     "나중에 그 자리에 다른 값을 넣을 수 있게" -&gt; 데이터를 한곳에 모은 구조로 설계
+5. 정도를 정해 준다
+     "적당한 선에서" -&gt; 필요한 만큼만 추가
+6. 단계적으로 키운다
+     단순 페이지 -&gt; 링크 자리 -&gt; 대시보드 순서로 나누면 결과를 확인하며 수정하기 쉽다.</div>
+</div>
+</details>
+
+<details id="step_faq">
+<summary><span class="arrow"></span>문제 해결 (FAQ)</summary>
+<div class="content">
+<h3>Q. push 했는데 사이트가 안 바뀌어요.</h3>
+<div class="text">A. 1~2분 기다린 뒤 Ctrl + F5. 빌드 상태는 아래 명령으로 확인.</div>
+<pre><code>gh api repos/&lt;조직&gt;/&lt;조직&gt;.github.io/pages/builds/latest</code></pre>
+<h3>Q. 404 가 떠요.</h3>
+<div class="text">A. 저장소 이름이 정확히 &lt;조직&gt;.github.io 인지, index.html 이 루트에 있는지,
+   저장소가 Public 인지 확인.</div>
+<h3>Q. 그래프만 안 보여요.</h3>
+<div class="text">A. Chart.js 를 인터넷(CDN)에서 불러오므로 인터넷 연결을 확인.
+   그래프 외 나머지 화면은 정상 동작하도록 만들어져 있다.</div>
+<h3>Q. gh 명령이 실패해요.</h3>
+<div class="text">A. gh auth status 로 로그인 확인. 안 되어 있으면 gh auth login.</div>
+<h3>Q. 프로젝트 링크가 404 예요.</h3>
+<div class="text">A. 해당 프로젝트 저장소(예: to-do-list)에서도 Settings &gt; Pages 가
+   켜져 있어야 한다.</div>
+</div>
+</details>
+
+</div>
+<script>
+  // 목차를 클릭하면 해당 단계를 펼치고 그 위치로 이동
+  document.querySelectorAll(".toc a").forEach(function (toc_link) {
+    toc_link.addEventListener("click", function () {
+      const target_step = document.getElementById(toc_link.dataset.step);
+      target_step.open = true;
+    });
+  });
+</script>
+</body>
+</html>

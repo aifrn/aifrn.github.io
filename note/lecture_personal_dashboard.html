@@ -101,7 +101,7 @@
 <body>
 <div class="page">
   <!-- 초기화면으로 돌아가기 -->
-  <a class="back_link" href="../index.html"> HOME 으로 돌아가기</a>
+  <a class="back_link" href="../index.html">← HOME으로 돌아가기</a>
   <h1>Claude Code로 GitHub Pages 개인 대시보드 만들기 - 강의 자료</h1>
 
   <nav class="toc">
@@ -111,7 +111,7 @@
       <li><a href="#step_concept" data-step="step_concept">핵심 개념 먼저 알기</a></li>
       <li><a href="#step1" data-step="step1">1단계: 가장 단순한 HTML 페이지 만들고 배포하기</a></li>
       <li><a href="#step2" data-step="step2">2단계: 프로젝트 링크 자리 6개 확보하기</a></li>
-      <li><a href="#step4" data-step="step4">4단계: 개인 대시보드로 확장하기 (*핵심*)</a></li>
+      <li><a href="#step3" data-step="step3">3단계: 개인 대시보드로 확장하기 (시계 + 그래프 + 링크 연결)</a></li>
       <li><a href="#step_code" data-step="step_code">코드 구조 이해하기: dashboard_data</a></li>
       <li><a href="#step_task" data-step="step_task">실습 과제</a></li>
       <li><a href="#step_tip" data-step="step_tip">좋은 프롬프트 작성 요령</a></li>
@@ -124,14 +124,14 @@
 <div class="content">
 <h3>강의 개요</h3>
 <div class="text">- 목표   : Claude Code에게 자연어 프롬프트로 지시하여
-           GitHub 페이지(ex: ai-lecture-lab.github.io)를 만들고,
+           GitHub 페이지(예: ai-lecture-lab.github.io)를 만들고,
            실습 프로젝트 링크 + 시계 + 그래프가 있는 개인 대시보드로 발전시킨다.
 - 결과물 : https://[내깃허브아이디].github.io/
            <a href="https://ai-lecture-lab.github.io/" target="_blank">https://ai-lecture-lab.github.io/</a>
 - 저장소 : <a href="https://github.com/ai-lecture-lab/ai-lecture-lab.github.io" target="_blank">https://github.com/ai-lecture-lab/ai-lecture-lab.github.io</a>
-- 소요   : 약 30~40분 (총 4단계)</div>
+- 소요   : 약 30~40분 (총 3단계)</div>
 <h3>준비물 (이미 다 준비되어 있음)</h3>
-<div class="text">1. GitHub 계정 + 개인 깃허브 아이디 (예: ai-lecture-lab)
+<div class="text">1. GitHub 개인 계정 (예: 깃허브 아이디 ai-lecture-lab)
 2. Git 설치 (git --version 으로 확인)
 3. GitHub CLI(gh) 설치 및 로그인
 4. Claude Code 설치
@@ -147,14 +147,14 @@ gh auth status</code></pre>
 <details id="step_concept">
 <summary><span class="arrow"></span>핵심 개념 먼저 알기</summary>
 <div class="content">
-<h3>1) GitHub Pages 의 "사용자/조직 사이트"</h3>
-<div class="text">- 저장소 이름을 반드시 &lt;계정 또는 조직 이름&gt;.github.io 로 만들어야 한다.
-- 예) 조직 이름이 ai-lecture-lab 이면
+<h3>1) GitHub Pages 의 "사용자 사이트"</h3>
+<div class="text">- 저장소 이름을 반드시 &lt;내 깃허브 아이디&gt;.github.io 로 만들어야 한다.
+- 예) 깃허브 아이디가 ai-lecture-lab 이면
       저장소 이름 = ai-lecture-lab.github.io
       사이트 주소 = https://ai-lecture-lab.github.io/
 - 이 이름 규칙을 지키면 main 브랜치의 루트(/)가 자동으로 배포된다.</div>
 <h3>2) 프로젝트 사이트</h3>
-<div class="text">- 같은 조직 안에 다른 저장소(예: to-do-list)를 만들고 Pages를 켜면
+<div class="text">- 같은 계정 안에 다른 저장소(예: to-do-list)를 만들고 Pages를 켜면
   https://ai-lecture-lab.github.io/to-do-list 처럼 하위 경로로 열린다.
 - 그래서 메인 대시보드에서 각 실습 프로젝트로 링크를 걸 수 있다.</div>
 <h3>3) 배포 반영 시간</h3>
@@ -170,14 +170,14 @@ gh auth status</code></pre>
 <pre class="prompt">내 깃허브 id 는 ai-lecture-lab 이고, ai-lecture-lab.github.io 라는 이름을 가진
 페이지를 만들려고 한다. 우선 아주 단순한 html 하나만 있는 페이지를 만들어서
 보여줘. 깃 커밋 &amp; 깃 푸시까지 진행해줘.</pre>
-<div class="text">* 수강생은 ai-lecture-lab 을 본인 계정·조직 이름으로 바꿔서 입력.</div>
+<div class="text">* 수강생은 ai-lecture-lab 을 본인 깃허브 아이디로 바꿔서 입력.</div>
 <h3>Claude Code가 수행한 작업</h3>
 <div class="text">1. 현재 폴더 상태, git 설치, gh 로그인 상태, 원격 저장소 존재 여부 확인
    -&gt; 저장소가 아직 없음을 확인</div>
 <pre><code>gh auth status
 gh repo view ai-lecture-lab/ai-lecture-lab.github.io</code></pre>
-<div class="text">2. 조직이 실제로 존재하는지 확인</div>
-<pre><code>gh api orgs/ai-lecture-lab</code></pre>
+<div class="text">2. 로그인한 계정이 ai-lecture-lab 인지 확인</div>
+<pre><code>gh api user --jq .login</code></pre>
 <div class="text">3. index.html 작성 (제목 + 환영 문구, 화면 중앙 정렬)
 4. 로컬 저장소 생성 -&gt; 커밋 -&gt; GitHub 저장소 생성 + push 를 한 번에 진행</div>
 <pre><code>git init -b main
@@ -220,7 +220,7 @@ git push</code></pre>
 <h3>포인트</h3>
 <div class="text">- "아직 링크는 작동하지 않는 것으로" 라는 조건을 주면
   자리만 잡아 두고 나중에 주소만 채우는 구조로 만들어 준다.</div>
-<h3>[참고] 3단계 프롬프트 "깃허브에 올려줘."</h3>
+<h3>[참고] 추가 프롬프트 "깃허브에 올려줘."</h3>
 <div class="text">- 2단계에서 이미 push 가 끝나 있었기 때문에
   Claude는 git status / Pages 빌드 상태(built)만 확인하고
   "이미 반영되어 있음" 을 알려 주었다.
@@ -230,8 +230,8 @@ gh api repos/ai-lecture-lab/ai-lecture-lab.github.io/pages/builds/latest</code><
 </div>
 </details>
 
-<details id="step4">
-<summary><span class="arrow"></span>4단계: 개인 대시보드로 확장하기 (시계 + 그래프 + 링크 연결)</summary>
+<details id="step3">
+<summary><span class="arrow"></span>3단계: 개인 대시보드로 확장하기 (시계 + 그래프 + 링크 연결)</summary>
 <div class="content">
 <h3>프롬프트</h3>
 <pre class="prompt">1번 할일 목록 리스트 링크 연결해줘 . 링크는
@@ -309,7 +309,7 @@ gh api repos/ai-lecture-lab/ai-lecture-lab.github.io/pages/builds/latest</code><
   git add / commit / push 해 보기.</div>
 <h3>[과제 2] 같은 작업을 Claude Code에게 시키기</h3>
 <pre class="prompt">2번 클로드 활용 스네이크 게임 링크 연결해줘. 링크는
-"https://&lt;내조직&gt;.github.io/snake-game" 이다. 커밋 &amp; 푸시까지 진행해줘.</pre>
+"https://&lt;내깃허브아이디&gt;.github.io/snake-game" 이다. 커밋 &amp; 푸시까지 진행해줘.</pre>
 <h3>[과제 3] 그래프를 실제 데이터로 바꾸기</h3>
 <pre class="prompt">꺾은선 그래프를 이번 주 실제 학습 시간으로 바꿔줘.
 월 1시간, 화 2시간, 수 0.5시간, 목 3시간, 금 1시간, 토 4시간, 일 2시간이야.
@@ -324,7 +324,7 @@ gh api repos/ai-lecture-lab/ai-lecture-lab.github.io/pages/builds/latest</code><
 <summary><span class="arrow"></span>좋은 프롬프트 작성 요령 (이번 실습에서 배운 점)</summary>
 <div class="content">
 <div class="text">1. 배경을 먼저 알려준다
-     "ai-lecture-lab 은 내 개인 organization 이다" -&gt; 저장소 이름 규칙을 맞춰 줌
+     "내 깃허브 id 는 ai-lecture-lab 이고" -&gt; 저장소 이름 규칙을 맞춰 줌
 2. 범위를 정해 준다
      "아주 단순한 html 하나만" -&gt; 과하게 만들지 않음
 3. 끝까지 할 일을 명시한다
@@ -343,9 +343,9 @@ gh api repos/ai-lecture-lab/ai-lecture-lab.github.io/pages/builds/latest</code><
 <div class="content">
 <h3>Q. push 했는데 사이트가 안 바뀌어요.</h3>
 <div class="text">A. 1~2분 기다린 뒤 Ctrl + F5. 빌드 상태는 아래 명령으로 확인.</div>
-<pre><code>gh api repos/&lt;조직&gt;/&lt;조직&gt;.github.io/pages/builds/latest</code></pre>
+<pre><code>gh api repos/&lt;아이디&gt;/&lt;아이디&gt;.github.io/pages/builds/latest</code></pre>
 <h3>Q. 404 가 떠요.</h3>
-<div class="text">A. 저장소 이름이 정확히 &lt;조직&gt;.github.io 인지, index.html 이 루트에 있는지,
+<div class="text">A. 저장소 이름이 정확히 &lt;아이디&gt;.github.io 인지, index.html 이 루트에 있는지,
    저장소가 Public 인지 확인.</div>
 <h3>Q. 그래프만 안 보여요.</h3>
 <div class="text">A. Chart.js 를 인터넷(CDN)에서 불러오므로 인터넷 연결을 확인.
@@ -367,6 +367,18 @@ gh api repos/ai-lecture-lab/ai-lecture-lab.github.io/pages/builds/latest</code><
       target_step.open = true;
     });
   });
+
+  // 주소에 #step3 처럼 단계가 붙어 들어오면 그 단계를 펼침
+  function open_step_by_hash() {
+    const step_id = decodeURIComponent(location.hash.slice(1));
+    const target_step = step_id ? document.getElementById(step_id) : null;
+    if (target_step && target_step.tagName === "DETAILS") {
+      target_step.open = true;
+      target_step.scrollIntoView();
+    }
+  }
+  open_step_by_hash();
+  window.addEventListener("hashchange", open_step_by_hash);
 </script>
 </body>
 </html>

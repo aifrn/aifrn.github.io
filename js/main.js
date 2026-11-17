@@ -20,7 +20,20 @@ function secure_blank_links() {
   });
 }
 
+// data-show-from ~ data-show-until 기간에만 요소를 보여 줍니다.
+// 시각은 "2026-11-18T00:00:00+09:00"처럼 시간대까지 적어야 방문자 위치와 상관없이 한국 시간 기준으로 동작합니다.
+function show_timed_items() {
+  const timed_items = document.querySelectorAll("[data-show-from], [data-show-until]");
+  const now_ms = Date.now();
+  timed_items.forEach(function (item_el) {
+    const from_ms = item_el.dataset.showFrom ? Date.parse(item_el.dataset.showFrom) : -Infinity;
+    const until_ms = item_el.dataset.showUntil ? Date.parse(item_el.dataset.showUntil) : Infinity;
+    item_el.hidden = !(now_ms >= from_ms && now_ms < until_ms);
+  });
+}
+
 document.addEventListener("DOMContentLoaded", function () {
   set_footer_year();
   secure_blank_links();
+  show_timed_items();
 });

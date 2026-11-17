@@ -355,3 +355,9 @@ img {
     padding: 14px 18px;
   }
 }
+
+/* ---------- 기간 한정 표시 ---------- */
+/* hidden 속성이 붙은 요소는 다른 display 규칙보다 우선해서 숨깁니다. */
+[hidden] {
+  display: none !important;
+}

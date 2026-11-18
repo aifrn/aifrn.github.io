@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Google OTP로 GitHub 2단계 인증 설정하고 Vercel에 배포하기 - 강의 자료</title>
+<style>
+  /* 전체 기본 스타일 */
+  body {
+    font-family: "Malgun Gothic", sans-serif;
+    background: #f2f4f8;
+    color: #222;
+    margin: 0;
+    padding: 32px 16px;
+    line-height: 1.6;
+  }
+  .page { max-width: 860px; margin: 0 auto; }
+  h1 { font-size: 26px; margin: 0 0 20px; }
+
+  /* 목차 상자 */
+  .toc {
+    background: white;
+    border-radius: 12px;
+    padding: 16px 24px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  }
+  .toc h2 { font-size: 18px; margin: 0 0 8px; }
+  .toc ol { margin: 0; padding-left: 20px; }
+  .toc a { color: #0b57d0; text-decoration: none; }
+  .toc a:hover { text-decoration: underline; }
+
+  /* 단계별 접기/펼치기 상자 */
+  details {
+    background: white;
+    border-radius: 12px;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  }
+  summary {
+    list-style: none;
+    cursor: pointer;
+    padding: 16px 20px;
+    font-size: 18px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  summary::-webkit-details-marker { display: none; }
+
+  /* 제목 왼쪽의 작은 화살표 (닫힘: 오른쪽, 열림: 아래쪽) */
+  .arrow {
+    width: 0;
+    height: 0;
+    border-top: 6px solid transparent;
+    border-bottom: 6px solid transparent;
+    border-left: 9px solid #666;
+    transition: transform 0.2s;
+  }
+  details[open] .arrow { transform: rotate(90deg); }
+
+  .content { padding: 0 24px 20px; border-top: 1px solid #eee; }
+  .content h3 {
+    font-size: 16px;
+    margin: 22px 0 8px;
+    padding-left: 8px;
+    border-left: 4px solid #000;
+  }
+  .text { white-space: pre-wrap; margin: 8px 0; }
+  pre {
+    background: #1e1e1e;
+    color: #f5f5f5;
+    padding: 12px 16px;
+    border-radius: 8px;
+    overflow-x: auto;
+    font-size: 14px;
+  }
+  /* 프롬프트 상자: 명령어와 구분되도록 밝은 색 */
+  pre.prompt {
+    background: #eef3ff;
+    color: #1a2b4c;
+    border-left: 4px solid #0b57d0;
+    white-space: pre-wrap;
+    font-family: "Malgun Gothic", sans-serif;
+    font-size: 15px;
+  }
+  .content a { color: #0b57d0; word-break: break-all; }
+
+  /* 표 */
+  table { border-collapse: collapse; width: 100%; margin: 8px 0; font-size: 15px; }
+  th, td { border: 1px solid #ddd; padding: 8px 12px; text-align: left; }
+  th { background: #f6f7f9; }
+  td code { background: #f2f4f8; padding: 1px 6px; border-radius: 4px; }
+
+  /* 초기화면으로 돌아가기 링크 */
+  .back_link { display: inline-block; margin-bottom: 16px; color: #0b57d0; text-decoration: none; font-weight: bold; }
+  .back_link:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<div class="page">
+  <!-- 초기화면으로 돌아가기 -->
+  <a class="back_link" href="../index.html">← HOME으로 돌아가기</a>
+  <h1>Google OTP로 GitHub 2단계 인증 설정하고 Vercel에 배포하기 - 강의 자료</h1>
+
+  <nav class="toc">
+    <h2>목차</h2>
+    <ol>
+      <li><a href="#step0" data-step="step0">안내서 개요와 준비물</a></li>
+      <li><a href="#step1" data-step="step1">1부: Google OTP로 GitHub 2단계 인증 켜기</a></li>
+      <li><a href="#step2" data-step="step2">2부: 이미 있는 Vercel 계정에 GitHub 연결하기</a></li>
+      <li><a href="#step3" data-step="step3">3부: GitHub 저장소를 Vercel로 배포하기</a></li>
+      <li><a href="#step_faq" data-step="step_faq">4부: 자주 막히는 곳 (FAQ)</a></li>
+      <li><a href="#step_lost" data-step="step_lost">5부: 휴대폰을 잃어버렸을 때</a></li>
+      <li><a href="#step_check" data-step="step_check">6부: 최종 점검표</a></li>
+      <li><a href="#step_ref" data-step="step_ref">참고 자료</a></li>
+    </ol>
+  </nav>
+
+<details id="step0">
+<summary><span class="arrow"></span>안내서 개요와 준비물</summary>
+<div class="content">
+<h3>안내서 개요</h3>
+<div class="text">- 대상 : GitHub와 Vercel을 처음 연결하는 사람 (Vercel 계정은 이미 있음)
+- 목표 : Google OTP 앱으로 GitHub 2단계 인증을 켜고,
+         기존 Vercel 계정에 GitHub를 연결한 뒤,
+         GitHub 저장소를 Vercel로 배포한다.
+- 기준 : 2026년 11월 화면 기준 (버튼 이름은 업데이트로 조금씩 바뀔 수 있음)</div>
+<h3>준비물</h3>
+<div class="text">1. PC와 인터넷 브라우저 (Chrome 권장)
+2. 스마트폰 (Android 또는 iPhone)
+3. GitHub 계정 (아이디/이메일, 비밀번호)
+4. Vercel 계정 (이미 가입되어 있음)
+5. GitHub에 올려 둔 프로젝트 저장소 1개
+   * 내 개인 계정에 있는 저장소를 쓴다. 회사나 단체(Organization) 소유의
+     비공개 저장소는 Vercel 무료(Hobby) 플랜으로 배포할 수 없다.</div>
+<h3>용어 풀이</h3>
+<table>
+  <tr><th>용어</th><th>뜻</th></tr>
+  <tr><td>2FA (2단계 인증)</td><td>비밀번호 + 휴대폰에 뜨는 6자리 코드, 이렇게 두 번 확인하는 로그인 방식. GitHub는 코드를 올리는 사용자에게 2FA를 의무로 요구한다.</td></tr>
+  <tr><td>Google OTP</td><td>구글이 만든 인증 앱. 영어 이름은 "Google Authenticator". 30초마다 새 6자리 코드를 만든다.</td></tr>
+  <tr><td>복구 코드 (Recovery codes)</td><td>휴대폰을 잃어버렸을 때 대신 쓰는 비상용 코드 묶음. 반드시 저장해야 한다.</td></tr>
+  <tr><td>배포 (Deploy)</td><td>내 프로젝트를 인터넷 주소로 접속할 수 있게 올리는 일.</td></tr>
+</table>
+</div>
+</details>
+
+<details id="step1">
+<summary><span class="arrow"></span>1부: Google OTP로 GitHub 2단계 인증 켜기</summary>
+<div class="content">
+<h3>1-1. 휴대폰에 Google OTP 설치하기</h3>
+<div class="text">1. Android는 Play 스토어, iPhone은 App Store를 연다.
+2. "Google OTP" 또는 "Google Authenticator"를 검색한다.
+   (개발자: Google LLC 인지 꼭 확인)
+3. 설치 후 앱을 연다.
+4. "시작하기"를 누르고 내 Google 계정으로 로그인한다.</div>
+<h3>[중요] 백업(동기화) 켜기</h3>
+<div class="text">- 앱 오른쪽 위의 프로필 사진(또는 구름 아이콘)을 누른다.
+- Google 계정과 동기화(백업)가 켜져 있는지 확인한다.
+- 구름 아이콘이 초록색이면 백업이 켜진 상태다.
+- 이렇게 해 두면 휴대폰을 바꾸거나 잃어버려도
+  새 휴대폰에서 같은 Google 계정으로 로그인하면 코드가 돌아온다.</div>
+<h3>1-2. GitHub에서 2단계 인증 시작하기 (PC에서)</h3>
+<div class="text">1. PC 브라우저에서 <a href="https://github.com" target="_blank">https://github.com</a> 에 로그인한다.
+2. 오른쪽 위 내 프로필 사진을 누른다.
+3. 메뉴에서 [Settings]를 누른다.
+4. 왼쪽 메뉴의 "Access" 묶음에서 [Password and authentication]을 누른다.
+5. "Two-factor authentication" 부분에서
+   [Enable two-factor authentication] 버튼을 누른다.
+     - 비밀번호를 다시 물으면 입력한다.
+     - 이메일로 확인 코드가 오면 그 코드를 입력한다.
+6. 화면에 QR 코드가 나타난다.
+   ("Setup authenticator app" 또는 "Set up using an app"이 보이면 그것을 선택)</div>
+<h3>1-3. Google OTP로 QR 코드 찍기 (휴대폰에서)</h3>
+<div class="text">1. 휴대폰의 Google OTP 앱을 연다.
+2. 오른쪽 아래 [ + ] 버튼을 누른다.
+3. [QR 코드 스캔]을 누른다. (카메라 권한을 물으면 "허용")
+4. PC 화면의 QR 코드를 휴대폰 카메라로 비춘다.
+5. 앱에 "GitHub: 내아이디" 항목과 6자리 숫자가 생긴다.</div>
+<h3>[참고] QR 코드가 안 찍힐 때</h3>
+<div class="text">- PC 화면에서 "setup key" 또는 "enter this text code"를 누르면
+  긴 영문자 키가 나온다.
+- Google OTP에서 [ + ] -&gt; [설정 키 입력]을 누르고
+  계정 이름(예: GitHub)과 그 키를 입력한다.
+  키 유형은 "시간 기준"으로 둔다.</div>
+<h3>1-4. 6자리 코드 입력하고 복구 코드 저장하기</h3>
+<div class="text">1. Google OTP에 보이는 6자리 숫자를 PC의 GitHub 화면에 입력한다.
+     - 숫자는 30초마다 바뀐다. 바뀌기 직전이면 새 숫자를 기다렸다가 입력.
+2. [Continue]를 누른다.
+3. 복구 코드(Recovery codes) 화면이 나온다.
+     - [Download]를 눌러 파일(github-recovery-codes.txt)로 저장한다.
+     - 이 파일을 휴대폰이 아닌 곳에 보관한다.
+       예) PC의 안전한 폴더 + USB, 또는 종이에 출력해 보관
+     - 다른 사람에게 절대 보여주지 않는다.
+4. [I have saved my recovery codes] (복구 코드를 저장했음)를 누른다.
+5. 2단계 인증이 켜졌다는 화면이 나오면 [Done]을 누른다.</div>
+<h3>1-5. 제대로 되었는지 확인하기</h3>
+<div class="text">1. GitHub에서 로그아웃한다. (프로필 사진 -&gt; Sign out)
+2. 다시 아이디와 비밀번호로 로그인한다.
+3. 6자리 코드를 묻는 화면이 나오면 Google OTP의 GitHub 코드를 입력한다.
+4. 로그인이 되면 성공!</div>
+<h3>포인트</h3>
+<div class="text">- 같은 PC에서는 한동안 코드를 다시 묻지 않는다.
+- 새 PC, 로그아웃 후 재로그인, 중요한 설정 변경 때 다시 묻는다.</div>
+</div>
+</details>
+
+<details id="step2">
+<summary><span class="arrow"></span>2부: 이미 있는 Vercel 계정에 GitHub 연결하기</summary>
+<div class="content">
+<h3>왜 연결하나?</h3>
+<div class="text">- 이미 이메일 등으로 가입한 Vercel 계정에 GitHub 계정을 연결한다.
+- 연결하면 앞으로 "Continue with GitHub"로 로그인할 수 있고,
+  GitHub 저장소를 Vercel에서 바로 불러올 수 있다.</div>
+<h3>2-1. Vercel 계정 설정에서 GitHub 연결하기</h3>
+<div class="text">1. <a href="https://vercel.com" target="_blank">https://vercel.com</a> 에 평소 방법(이메일 등)으로 로그인한다.
+2. 오른쪽 위 내 프로필 사진을 누른다.
+3. 메뉴에서 [Settings]를 누른다.
+4. 왼쪽 목록에서 [Authentication]을 누른다.
+5. 로그인 방법을 추가하는 곳("Add New")에서 [GitHub]를 누른다.
+6. GitHub 로그인 화면이 열리면
+     - GitHub 아이디/비밀번호를 입력한다.
+     - 6자리 코드를 물으면 Google OTP의 GitHub 코드를 입력한다.
+7. "Authorize Vercel" (Vercel에 권한 허용) 화면이 나오면 [Authorize]를 누른다.
+8. Vercel 화면으로 돌아와 Authentication 목록에 GitHub가 보이면 연결 완료!</div>
+<h3>2-2. 연결할 때 알아둘 점</h3>
+<div class="text">- Vercel 무료(Hobby) 계정에는 GitHub 계정을 1개만 연결할 수 있다.
+- 그 GitHub 계정이 이미 다른 Vercel 계정에 연결되어 있으면 연결이 거절된다.
+  다른 Vercel 계정에서 먼저 연결을 끊어야 한다.
+- 이메일 로그인도 그대로 남겨 둔다.
+  GitHub 연결에 문제가 생겨도 이메일로 들어갈 수 있다.
+- GitHub 설정의 "Authorized GitHub Apps"에서 Vercel을 함부로 지우지 않는다.
+  GitHub로만 로그인하던 사람은 Vercel 계정에 못 들어가게 될 수 있다.
+- Vercel에도 자체 2단계 인증이 따로 있다(선택 사항).
+  켜면 GitHub 코드 + Vercel 코드를 두 번 입력해야 한다.
+  처음에는 GitHub 2단계 인증만 켜는 것을 권장.
+  켤 경우 Vercel 복구 코드도 반드시 저장한다.</div>
+</div>
+</details>
+
+<details id="step3">
+<summary><span class="arrow"></span>3부: GitHub 저장소를 Vercel로 배포하기</summary>
+<div class="content">
+<h3>3-1. 새 프로젝트 만들기</h3>
+<div class="text">1. Vercel 대시보드(로그인 후 첫 화면)에서
+   오른쪽 위 [Add New...] 버튼 -&gt; [Project]를 누른다.
+2. "Import Git Repository" (Git 저장소 가져오기) 화면이 나온다.</div>
+<h3>3-2. Vercel이 내 GitHub 저장소를 볼 수 있게 허락하기 (처음 한 번)</h3>
+<div class="text">처음에는 저장소 목록이 비어 있거나 [Install] 버튼이 보인다.
+Vercel 앱을 GitHub에 설치해서 저장소를 볼 권한을 줘야 한다.
+
+1. [Install] 또는 [Adjust GitHub App Permissions]를 누른다.
+2. GitHub 화면으로 이동한다.
+3. 설치할 곳으로 내 GitHub 계정을 선택한다.
+4. 저장소 접근 범위를 고른다.
+     - [Only select repositories] (선택한 저장소만) 를 권장한다.
+     - 아래 목록에서 배포할 저장소를 고른다.
+     - [All repositories]를 고르면 내 모든 저장소를 볼 수 있게 된다.
+5. [Install] (또는 [Save])을 누른다.
+6. Vercel 화면으로 돌아오면 고른 저장소가 목록에 보인다.</div>
+<h3>[중요] 여기서 2단계 인증을 다시 묻는다</h3>
+<div class="text">- 앱 설치는 "중요한 작업"이라서 GitHub가 한 번 더 확인한다.
+- "Confirm access" 화면이 나오면 Google OTP의 GitHub 6자리 코드를 입력한다.
+  (비밀번호로 확인하는 선택지가 보이면 비밀번호를 입력해도 된다.)
+- 한 번 확인하면 약 2시간 동안은 중요한 작업을 해도 다시 묻지 않는다.
+  그러니 3부는 중간에 끊지 말고 한 번에 끝내는 것이 편하다.</div>
+<h3>3-3. 저장소 가져오기 (Import)</h3>
+<div class="text">1. 배포할 저장소 이름 옆의 [Import]를 누른다.
+2. "Configure Project" (프로젝트 설정) 화면이 나온다.</div>
+<h3>3-4. 프로젝트 설정 후 배포하기</h3>
+<div class="text">화면의 항목은 대부분 그대로 두면 된다.</div>
+<table>
+  <tr><th>항목</th><th>설정</th></tr>
+  <tr><td>Project Name</td><td>프로젝트 이름. 접속 주소에도 쓰인다. (영문 소문자, 숫자, 하이픈(-)만 사용)</td></tr>
+  <tr><td>Framework Preset</td><td>Next.js 프로젝트면 자동으로 "Next.js"가 선택된다. 그대로 둔다.</td></tr>
+  <tr><td>Root Directory</td><td>그대로 둔다. (저장소 안의 하위 폴더에 프로젝트가 있을 때만 바꾼다.)</td></tr>
+  <tr><td>Environment Variables</td><td>API 키 같은 비밀 값을 넣는 곳. DB 주소는 3-6에서 자동으로 들어가므로 지금은 비워 둬도 된다.</td></tr>
+</table>
+<div class="text">[Deploy] 버튼을 누른다.
+  - 1~3분 정도 빌드(Building)가 진행된다.
+  - 축하 화면("Congratulations")이 나오면 배포 성공!
+  - 화면의 미리보기를 누르거나 [Continue to Dashboard]를 누른다.</div>
+<h3>3-5. 배포 주소 확인하기</h3>
+<div class="text">- 프로젝트 화면의 "Domains"에 있는 주소가 내 사이트 주소다.
+  예) https://프로젝트이름.vercel.app
+- 이 주소를 휴대폰이나 다른 PC에서 열어 잘 보이는지 확인한다.</div>
+<h3>3-6. (DB를 쓰는 프로젝트만) Neon DB 연결하기</h3>
+<div class="text">스네이크 게임처럼 점수를 DB에 저장하는 프로젝트는 이 단계가 필요하다.
+
+1. Vercel의 프로젝트 화면에서 위쪽 [Storage] 탭을 누른다.
+2. 목록에서 [Neon] (Postgres)을 고르고 [Create] 또는 [Continue]를 누른다.
+3. 요금제(Plan)는 반드시 [Free]를 고른다.
+4. 지역(Region)은 가까운 곳을 고른다. (예: Asia Pacific)
+5. 이 프로젝트에 연결(Connect)한다.
+     - DATABASE_URL 같은 환경 변수가 자동으로 추가된다.
+6. 환경 변수는 다시 배포해야 적용된다.
+   [Deployments] 탭 -&gt; 가장 위 배포의 [...] 메뉴 -&gt; [Redeploy]를 누른다.</div>
+<h3>3-7. 이후에는 push만 하면 자동 배포</h3>
+<div class="text">GitHub와 연결된 뒤에는 Vercel에 다시 들어갈 필요가 없다.
+코드를 고치고 GitHub에 올리면(push) Vercel이 알아서 배포한다.
+
+- main 브랜치에 올리면   -&gt; 실제 사이트(Production)가 바뀐다.
+- 다른 브랜치에 올리면   -&gt; 미리보기(Preview) 주소가 따로 생긴다.
+                            실제 사이트는 바뀌지 않으니 시험해 볼 때 좋다.
+
+예) 터미널에서 (프로젝트 폴더 안)</div>
+<pre><code>git add .
+git commit -m "랭킹 화면 수정"
+git push</code></pre>
+<div class="text">- 1~3분 뒤 Vercel의 [Deployments] 탭에서 새 배포가 "Ready"가 되면
+  사이트에 반영된 것이다.</div>
+</div>
+</details>
+
+<details id="step_faq">
+<summary><span class="arrow"></span>4부: 자주 막히는 곳 (FAQ)</summary>
+<div class="content">
+<h3>Q. 6자리 코드를 넣었는데 틀렸다고 나와요.</h3>
+<div class="text">A. - 휴대폰의 날짜와 시간이 "자동 설정"인지 확인한다.
+     시간이 조금만 어긋나도 코드가 맞지 않는다.
+   - 숫자가 바뀌기 직전이었을 수 있다. 새 숫자로 다시 입력한다.
+   - Google OTP에 GitHub 항목이 여러 개라면 가장 최근에 추가한 항목의 코드를 쓴다.</div>
+<h3>Q. Vercel의 저장소 목록에 내 저장소가 안 보여요.</h3>
+<div class="text">A. - 3-2에서 "Only select repositories"를 고를 때 그 저장소를 빠뜨렸을 수 있다.
+   - GitHub -&gt; Settings -&gt; Applications -&gt; Vercel 옆 [Configure]에서 저장소를 추가한다.
+   - 회사/단체(Organization) 저장소라면 내 개인 계정으로 옮기거나(fork) 새로 만든다.</div>
+<h3>Q. 계속 2단계 인증 코드를 물어봐요.</h3>
+<div class="text">A. - 정상이다. 앱 설치나 권한 변경 같은 중요한 작업마다 GitHub가 다시 확인한다.
+   - 한 번 확인하면 약 2시간 동안은 다시 묻지 않으니, 작업을 한 번에 몰아서 한다.</div>
+<h3>Q. 배포(Deploy)가 실패했어요. (빨간색 Error)</h3>
+<div class="text">A. - 실패한 배포를 누르면 "Build Logs"에 원인이 나온다.
+   - 내 PC에서 아래 명령이 성공하는지 먼저 확인한다.</div>
+<pre><code>npm run build</code></pre>
+<div class="text">   - 오류 메시지를 복사해서 Claude Code에 붙여 넣고 아래처럼 요청해도 된다.</div>
+<pre class="prompt">이 Vercel 빌드 오류를 고쳐 줘.</pre>
+<h3>Q. 사이트는 열리는데 DB 저장이 안 돼요.</h3>
+<div class="text">A. - 3-6을 했는지 확인한다.
+   - 환경 변수를 추가한 뒤 [Redeploy]를 했는지 확인한다.
+   - [Settings] -&gt; [Environment Variables]에 DATABASE_URL이 있는지 확인한다.</div>
+<h3>Q. GitHub로 Vercel에 로그인하면 "No Vercel account linked"가 나와요.</h3>
+<div class="text">A. 2부의 연결이 안 된 상태다. 이메일로 Vercel에 로그인한 뒤 2-1을 다시 한다.</div>
+</div>
+</details>
+
+<details id="step_lost">
+<summary><span class="arrow"></span>5부: 휴대폰을 잃어버렸을 때</summary>
+<div class="content">
+<h3>1) 먼저 잃어버린 휴대폰을 막는다</h3>
+<div class="text">- 구글 "내 기기 찾기"나 삼성 "SmartThings Find"로 원격 잠금하거나 초기화한다.</div>
+<h3>2) Google OTP 백업을 켜 두었다면 (1-1의 [중요])</h3>
+<div class="text">- 새 휴대폰에 Google OTP를 설치하고 같은 Google 계정으로 로그인하면
+  코드가 돌아온다. 끝.</div>
+<h3>3) 백업이 없었다면 GitHub는 아래 순서로 시도한다</h3>
+<div class="text">1. 아직 GitHub에 로그인된 PC가 있다면
+     바로 1-2부터 다시 하여 새 휴대폰으로 2단계 인증을 다시 등록한다.
+2. 복구 코드가 있다면
+     로그인 화면에서 6자리 코드 대신 "Use a recovery code" (복구 코드 사용)를 누르고
+     저장해 둔 복구 코드 하나를 입력한다. (한 번 쓴 복구 코드는 다시 쓸 수 없다.)
+3. 둘 다 없다면
+     로그인 화면의 계정 복구 요청을 진행한다.
+     이메일 확인과 함께, 전에 로그인했던 기기나 SSH 키 등으로
+     본인임을 증명해야 한다. 며칠이 걸릴 수 있다.
+
+* 주의: 2단계 인증 수단과 복구 수단을 모두 잃으면
+  GitHub 고객지원도 계정을 되살려 주지 못한다.</div>
+<h3>4) 복구한 뒤에는</h3>
+<div class="text">- 새 휴대폰으로 2단계 인증을 다시 설정한다.
+- 새 복구 코드를 받아 다시 저장한다.
+- Google OTP 백업을 켠다.</div>
+</div>
+</details>
+
+<details id="step_check">
+<summary><span class="arrow"></span>6부: 최종 점검표</summary>
+<div class="content">
+<div class="text">[ ] Google OTP 설치하고 Google 계정 백업(동기화) 켜기
+[ ] GitHub 2단계 인증 켜기
+[ ] GitHub 복구 코드 파일을 휴대폰이 아닌 곳에 저장하기
+[ ] 로그아웃 후 다시 로그인해서 6자리 코드 확인하기
+[ ] Vercel -&gt; Settings -&gt; Authentication에 GitHub 연결하기
+[ ] Vercel 이메일 로그인도 남겨 두기
+[ ] Vercel에서 Add New -&gt; Project -&gt; 저장소 Import 하기
+[ ] Vercel GitHub 앱은 "Only select repositories"로 설치하기
+[ ] Deploy 후 https://프로젝트이름.vercel.app 접속 확인하기
+[ ] (DB 사용 시) Storage -&gt; Neon(Free) 연결 -&gt; Redeploy 하기
+[ ] 코드를 고쳐 git push 하고 자동 배포되는지 확인하기</div>
+</div>
+</details>
+
+<details id="step_ref">
+<summary><span class="arrow"></span>참고 자료</summary>
+<div class="content">
+<div class="text">- GitHub 2단계 인증 설정
+  <a href="https://docs.github.com/en/authentication/securing-your-account-with-two-factor-authentication-2fa/configuring-two-factor-authentication" target="_blank">https://docs.github.com/en/authentication/securing-your-account-with-two-factor-authentication-2fa/configuring-two-factor-authentication</a>
+- GitHub 2단계 인증 분실 시 복구
+  <a href="https://docs.github.com/en/authentication/securing-your-account-with-two-factor-authentication-2fa/recovering-your-account-if-you-lose-your-2fa-credentials" target="_blank">https://docs.github.com/en/authentication/securing-your-account-with-two-factor-authentication-2fa/recovering-your-account-if-you-lose-your-2fa-credentials</a>
+- GitHub Sudo mode (중요 작업 재확인)
+  <a href="https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/sudo-mode" target="_blank">https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/sudo-mode</a>
+- Vercel 계정 로그인 연결(Authentication)
+  <a href="https://vercel.com/docs/accounts/create-an-account" target="_blank">https://vercel.com/docs/accounts/create-an-account</a>
+- Vercel Git 저장소 배포
+  <a href="https://vercel.com/docs/git" target="_blank">https://vercel.com/docs/git</a>
+- Google OTP(Authenticator) 도움말
+  <a href="https://support.google.com/accounts/answer/1066447" target="_blank">https://support.google.com/accounts/answer/1066447</a>
+
+* 각 서비스의 버튼 이름과 화면 구성은 업데이트로 조금씩 바뀔 수 있다.
+  이 문서는 2026년 11월 기준이다.</div>
+</div>
+</details>
+
+</div>
+<script>
+  // 목차를 클릭하면 해당 단계를 펼치고 그 위치로 이동
+  document.querySelectorAll(".toc a").forEach(function (toc_link) {
+    toc_link.addEventListener("click", function () {
+      const target_step = document.getElementById(toc_link.dataset.step);
+      target_step.open = true;
+    });
+  });
+
+  // 주소에 #step3 처럼 단계가 붙어 들어오면 그 단계를 펼침
+  function open_step_by_hash() {
+    const step_id = decodeURIComponent(location.hash.slice(1));
+    const target_step = step_id ? document.getElementById(step_id) : null;
+    if (target_step && target_step.tagName === "DETAILS") {
+      target_step.open = true;
+      target_step.scrollIntoView();
+    }
+  }
+  open_step_by_hash();
+  window.addEventListener("hashchange", open_step_by_hash);
+</script>
+</body>
+</html>
